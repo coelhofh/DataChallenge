@@ -53,3 +53,34 @@ idloadcontrol: load control identifier provided in the load start by function in
 totalRows: total of rows loaded for the current file / idloadcontrol.<BR>
 
 All rows are loaded with batches of 'n' rows - 'n' defined by config file commitsize variable.
+
+### loadfile.py
+**def inFile(filename):**
+* Input:<BR>
+filename: name of the file being processed<BR><BR>
+* Output:<BR>
+finalArr: array with all fields separated, specially the "Points" of Origin and Destination for use in de clustering function.<BR><BR>
+
+It looks easier to load the csv with pandas dataframe but as the file doesn't have a key field I used this function to treat the data and also create a sequential key field for each rows. It is necessary to associate the regions after the clusterization.
+
+### clustering.py
+**def plotElbowCurve(XOri, XDes):**
+* Input:<BR>
+XOri: array of coordinates (latitude and longitude) of trip origins<BR>
+XDes: array of coordinates (latitude and longitude) of trip destination <BR><BR>
+* Output:<BR>
+None <BR><BR>
+
+This function plots the Elbow curve for the Origin and Destination data. It's not used in normal operation but it tells the number of clusters "needed" for clustering. In the given data number 3 was given, as saw in the Tests Evidences (files Elbow_Curve_Destination and Elbow_Curve_Origin)
+
+**def RegionCluster(fileRows):**
+* Input:<BR>
+fileRows: array of the data given by the inFile(filename) function.<BR>
+* Output:<BR>
+dfFinal.iloc[: , 1:].values.tolist(): original input data plus the regions of origin and destination given the clustering algorithm. <BR><BR>
+
+This function get the input data and calculate the region clustering for both Origin and Destination. This values will be used in the insert and for the reports.
+
+
+
+
