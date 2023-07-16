@@ -126,7 +126,7 @@ This function get the input data and calculate the region clustering for both Or
   Table TbLoadControl give the load status as seen on the /venv/TestEvidence/ files - Db_load*.jpg 
   
 * The solution should be scalable to 100 million entries. It is encouraged to simplify the data by a data model. Please add proof that the solution is scalable.<BR>
-  Test make with 1.2M rows took 6 minutes to complete in my personal notebook (/venv/TestEvidence/ files - Db_load_finish.jpg - idloadcontrol - 79). As commits are a load parameters it's scalable to me. TbTrips table could be partitioned for better select performance.
+  Test made with 1.2M rows took 6 minutes to complete in my personal notebook (/venv/TestEvidence/ files - Db_load_finish.jpg - idloadcontrol - 79). As commits are a load parameters which does not overload the DB. TbTrips table could be partitioned for better select performance.
 
 * Use a SQL database<BR>
   Postgresql database was used in this solution. Last release postgresql-15.3-3.
