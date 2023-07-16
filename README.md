@@ -15,6 +15,7 @@ The execution logic is as follows:
 ## Data Model
 Only 2 tables were created for this challenge.<br>
 I would create a fact-dimension model but does not seems necessary. Making a fact-dimension is made necessary in case of report use - Power Bi for example - which handles better this type of modeling. In this case fields like region doesn't have any id's to load in a dimension table and there is no guarantee it would be equals in all loads, which can lead to a huge dimension if a sequential identifier is created using the "char" content. 
+SQL script in the /venv/SQLScripts/ folder.
 
 **Table tbtrips**
 * idtrips - Sequential id
@@ -110,6 +111,37 @@ fileRows: array of the data given by the inFile(filename) function.<BR>
 dfFinal.iloc[: , 1:].values.tolist(): original input data plus the regions of origin and destination given the clustering algorithm. <BR><BR>
 
 This function get the input data and calculate the region clustering for both Origin and Destination. This values will be used in the insert and for the reports.
+
+## Mandatory features
+* There must be an automated process to ingest and store the data.
+  Process is automated as seen on the /venv/TestEvidence/ - Console_output.pdf and Db_load*.jpg files.
+  
+* Trips with similar origin, destination, and time of day should be grouped together.
+  Sql script "groupedTrips.sql" is bringing this information with region clustering.
+  
+* Develop a way to obtain the weekly average number of trips for an area, defined by a bounding box (given by coordinates) or by a region.
+  Sql script "weekAverage.sql" brings this information but not with bounding boxes. The logic would be use the min and max coordinates for each cluster region and get the 4 points of the rectangle and draw the bouding box.
+
+* Develop a way to inform the user about the status of the data ingestion without using a polling solution.
+  Table TbLoadControl give the load status as seen on the /venv/TestEvidence/ files - Db_load*.jpg 
+  
+* The solution should be scalable to 100 million entries. It is encouraged to simplify the data by a data model. Please add proof that the solution is scalable.
+  Test make with 1.2M rows took 6 minutes to complete in my personal notebook (/venv/TestEvidence/ files - Db_load_finish.jpg - idloadcontrol - 79). As commits are a load parameters it's scalable to me. TbTrips table could be partitioned for better select performance.
+
+* Use a SQL database
+  Postgresql database was used in this solution. Last release postgresql-15.3-3.
+
+## Bonus features
+* Sketch up how you would set up the application using any cloud provider
+  This solution could run in any cloud provider with a single VM and a database connection if the proper configuration is done (firewall and file access).
+  Files could be in a storage account in any provider and a, Data factory for example, trigger can catch a new file and turn on the VM and start the program, turning of the machine after that.
+
+* Include a .sql file with queries to answer these questions:
+  **From the two most commonly appearing regions, which is the latest datasource?**
+  Sql script "commonregions.sql" is bringing this information with region clustering.
+
+  **What regions has the "cheap_mobile" datasource appeared in?**
+  Sql script "cheap_mobile.sql" is bringing this information with region clustering.
 
 
 
