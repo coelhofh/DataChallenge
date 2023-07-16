@@ -2,6 +2,7 @@
 import psycopg2
 from configparser import ConfigParser
 
+# get parameters from config.ini file
 def config(filename='config.ini', section='postgresql'):
     # create a parser
     parser = ConfigParser()
@@ -19,8 +20,9 @@ def config(filename='config.ini', section='postgresql'):
 
     return db
 
+# insert record in the control table.
 def insertControlLog(filename):
-
+    # SQL command
     strInsControl = "INSERT INTO tripsdb.tbloadcontrol " \
                     "(nmfile, " \
                     "tsloadstart, " \
@@ -48,7 +50,7 @@ def insertControlLog(filename):
 
 # update Control Table based on Success or Failed processing
 def updateControlLog(status, idloadcontrol, rows=0):
-
+    # SQL command
     strUpdControl = "update tripsdb.tbloadcontrol " \
                     "set tsloadfinish = CURRENT_TIMESTAMP," \
                     "nmloadstatus = '{0}'," \
@@ -68,7 +70,9 @@ def updateControlLog(status, idloadcontrol, rows=0):
         if conn is not None:
             conn.close()
 
+# insert data in the database table TbTrips
 def insertTbTrips(values, idloadcontrol):
+    # SQL command
     strSql = "INSERT INTO tripsdb.tbtrips " \
              "(nmregion, " \
              "vloriginlat, " \
@@ -93,6 +97,7 @@ def insertTbTrips(values, idloadcontrol):
 
         print("Begining loading - commit size {}".format(loadConfig["commitsize"]))
 
+        # split the array into chunks of "commitsize"
         while values:
             chunk, values = values[:int(loadConfig["commitsize"])], values[int(loadConfig["commitsize"]):]
             cur.executemany(strSql, chunk)
@@ -100,7 +105,6 @@ def insertTbTrips(values, idloadcontrol):
             rowsCounter = rowsCounter + len(chunk)
             print("Partial insert ok. {0} rows inserted. Total until now: {1} ".format(len(chunk), rowsCounter))
             updateControlLog("Processing", idloadcontrol, rowsCounter)
-            # time.sleep(10)
         return totalRows
 
     except (Exception, psycopg2.DatabaseError) as error:
