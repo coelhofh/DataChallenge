@@ -12,6 +12,36 @@ The execution logic is as follows:
   - The reading result will be passed through a data clustering logic to define the origin and destination regions of each trip.
   - With the clustering result the records will be inserted in the "Trips" table in batches of configurable size (more details bellow)
 
+## Data Model
+Only 2 tables were created for this challenge.<br>
+I would create a fact-dimension model but does not seems necessary. Making a fact-dimension is made necessary in case of report use - Power Bi for example - which handles better this type of modeling. In this case fields like region doesn't have any id's to load in a dimension table and there is no guarantee it would be equals in all loads, which can lead to a huge dimension if a sequential identifier is created using the "char" content. 
+
+**Table tbtrips**
+* idtrips - Sequential id
+* nmregion - Region name
+* vloriginlat - Origin latitude
+* vloriginlon - Origin longitude
+* vldestinationlat - Destination Latitude
+* vldestinationlon - Destination Longitude
+* tstrip - Trip timestamp
+* nmdatasource - Data source name
+* nboriginclustering - Origin clustering number
+* nbdestinationclustering - Destination clustering number
+* idloadcontrol - Loading identifier (foreign key)
+
+Consideration: idloadcontrol is present here in case of a load error. As the commit's are done in batch if a loading failed and any rows are committed is possible to delete the load manually ou automatically.
+
+**Table tbloadcontrol**
+* idloadcontrol - Load sequential id
+* nmfile - Sile loaded
+* tsloadstart - Start date time (local time)
+* tsloadfinish - Finish date time (local time). Null if not finished.
+* nmloadstatus - Load status - Processing, Error ou Success
+* tsloadupdate - Date time the rows was update, for status on load.
+* nbrowsloaded - Number of rows loaded. If Status = "Processing" it gives the partial commits. If Success gives the full rows loaded. Error always gives 0.
+
+With this is possible to get a status of each processing. Evidence of this in de TestEvidence folder.
+
 ## Code
 ### main.py
 Here you will only find the calling order for the logic explained above.
